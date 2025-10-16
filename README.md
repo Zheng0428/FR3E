@@ -49,7 +49,10 @@ This structured design enables FR3E to generate semantically meaningful explorat
 
 ## 🧱 Implementation
 
-FR3E builds upon the [**VeRL**](https://github.com/volcengine/verl) reinforcement learning framework.
+FR3E is implemented as an extension to the **[VeRL](https://github.com/volcengine/verl)** reinforcement learning framework.  
+The key modifications reside in the **PPO training pipeline**, mainly focusing on structured exploration and adaptive advantage modulation. 
+- `verl/trainer/ppo/ray_trainer.py`: Improved training workflow and distributed rollout scheduling to support the Two-stage Rollout strategy.
+- `verl/trainer/ppo/core_algos.py`: Optimized core PPO algorithms with the Advantage Scaling Factor mechanism, improving training stability and generalization.
 
 ### Installation
 
@@ -60,8 +63,9 @@ conda create -n fr3e python=3.10
 conda activate fr3e
 
 pip install -r requirements.txt
-
+```
 ### RUN
 
 ```bash
 bash run_srpo_v6_adv.sh
+```
