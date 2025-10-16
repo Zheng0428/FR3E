@@ -60,3 +60,8 @@ conda create -n fr3e python=3.10
 conda activate fr3e
 
 pip install -r requirements.txt
+
+### RUN
+
+```bash
+bash run_srpo_v6_adv.sh
