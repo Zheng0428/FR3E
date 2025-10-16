@@ -1,38 +1,32 @@
 set -x
 # online==================
-source /map-vepfs/miniconda3/bin/activate gqs_verl
-export GPUS_PER_NODE=${MLP_WORKER_GPU:-${KUBERNETES_CONTAINER_RESOURCE_GPU:-8}}
-export NNODES=${MLP_WORKER_NUM:-${WORLD_SIZE:-1}}
-export https_proxy="http://100.64.117.161:3128"
-export http_proxy="http://100.64.117.161:3128"
+
+export GPUS_PER_NODE=8
+export NNODES=8
+
 #=========================
-# DATA_ROOT_DIR=/map-vepfs/wanggeng/data/deepscaler_rl_data/simplelr_math_35
-# VAL_DATA_DIR=/map-vepfs/wanggeng/data/deepscaler_rl_data/deepscaler/aime.parquet
-simplerl_train_path=/map-vepfs/wanggeng/data/deepscaler_rl_data/simplelr_math_35/train.parquet
-simplerl_test_path=/map-vepfs/wanggeng/data/deepscaler_rl_data/simplelr_math_35/test.parquet
-deepscaler_train_path=/map-vepfs/wanggeng/data/deepscaler_rl_data/deepscaler/train.parquet
-aime_test_path=/map-vepfs/wanggeng/data/deepscaler_rl_data/deepscaler/aime.parquet
+
+simplerl_train_path=deepscaler_rl_data/simplelr_math_35/train.parquet
+simplerl_test_path=deepscaler_rl_data/simplelr_math_35/test.parquet
+deepscaler_train_path=deepscaler_rl_data/deepscaler/train.parquet
+aime_test_path=deepscaler_rl_data/deepscaler/aime.parquet
 DATA_ROOT_DIR="['$simplerl_train_path','$deepscaler_train_path']"
 VAL_DATA_DIR="['$aime_test_path','$simplerl_test_path']"
 
-CKPT_ROOT_DIR=/map-vepfs/wanggeng/ckpt
+CKPT_ROOT_DIR=/ckpt
 PROJECT_NAME=srpo
-# EXPERIMENT_NAME=srpo_8card_math7B-base_FalseSave0
-# EXPERIMENT_NAME=srpo_8card_math7B-base
+
 EXPERIMENT_NAME=srpo_v6_test_adv
 BASE_MODEL=/map-vepfs/models/Qwen2.5-Math-7B
-wandb login bed7e027c2c9adf8dcc02f337bd039b9848a537c
+
 export VLLM_ATTENTION_BACKEND=XFORMERS
 # https://github.com/Unakar/Logic-RL/blob/main/main_grpo.sh
 # export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
-export PYTHONPATH=$PYTHONPATH:/map-vepfs/wanggeng/verl
-export PYTHONPATH=$PYTHONPATH:/map-vepfs/wanggeng/verl/verl
 export HYDRA_FULL_ERROR=1
 # 默认参数：kl_loss_coef=0.001  srpo_wrong_sample_save_rate=0.2
 #  python -m verl.trainer.main_ppo
 # ./verl/trainer/main_ppo.py
 # actor_rollout_ref.actor.loss_agg_mode=token-mean/seq-mean-token-sum
-# 训练到400step有nan的问题
 python3 -u /map-vepfs/wanggeng/verl/verl/trainer/main_ppo.py \
     algorithm.adv_estimator=srpo \
     data.train_files=$DATA_ROOT_DIR \
